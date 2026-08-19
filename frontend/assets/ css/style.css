@@ -1,0 +1,111 @@
+:root {
+    --navy: #102a43;
+    --navy2: #173d5d;
+    --gold: #f2b84b;
+    --gold2: #d99b24;
+    --charcoal: #263238;
+    --muted: #667789;
+    --pearl: #f8f6f0;
+    --white: #fff;
+    --border: #dfe6ec;
+    --green: #16834b;
+    --red: #b9382f;
+    --shadow: 0 8px 28px rgba(16, 42, 67, .08);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0
+}
+
+html {
+    scroll-behavior: smooth
+}
+
+body {
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--pearl);
+    color: var(--charcoal);
+    line-height: 1.6
+}
+
+a {
+    text-decoration: none;
+    color: inherit
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit
+}
+
+button {
+    cursor: pointer
+}
+
+.container {
+    width: min(1120px, 92%);
+    margin: auto
+}
+
+.hidden {
+    display: none !important
+}
+
+.muted {
+    color: var(--muted)
+}
+
+.logo {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--navy)
+}
+
+.logo span {
+    color: var(--gold2)
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 9px;
+    padding: 11px 18px;
+    font-weight: 800;
+    transition: .2s;
+    border: 1px solid transparent
+}
+
+.btn:hover {
+    transform: translateY(-1px)
+}
+
+.btn-primary {
+    background: var(--navy);
+    color: white
+}
+
+.btn-primary:hover {
+    background: var(--navy2)
+}
+
+.btn-gold {
+    background: var(--gold);
+    color: var(--navy)
+}
+
+.btn-outline {
+    background: transparent;
+    border-color: var(--navy);
+    color: var(--navy)
+}
+
+.btn-small {
+    padding: 7px 12px;
+    font-size: .88rem
+}
