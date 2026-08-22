@@ -497,3 +497,161 @@ footer {
 .info-card {
     padding: 24px
 }
+
+.progress {
+    height: 8px;
+    background: #e7edf1;
+    border-radius: 99px;
+    overflow: hidden
+}
+
+.progress>span {
+    display: block;
+    height: 100%;
+    background: var(--gold);
+    border-radius: 99px
+}
+
+.list {
+    display: grid;
+    gap: 0
+}
+
+.list-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--border)
+}
+
+.list-row:last-child {
+    border-bottom: 0
+}
+
+.filters {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px
+}
+
+.input,
+.select {
+    width: 100%;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 11px 12px;
+    outline: 0
+}
+
+.input:focus,
+.select:focus {
+    border-color: var(--navy)
+}
+
+.course-grid,
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px
+}
+
+.course-card,
+.project-card {
+    padding: 22px
+}
+
+.course-meta {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+    margin: 13px 0
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-size: .74rem;
+    font-weight: 900;
+    background: #edf1f4;
+    color: #596b7a
+}
+
+.badge.done {
+    background: #ddf3e7;
+    color: var(--green)
+}
+
+.badge.progress {
+    background: #fff0ca;
+    color: #8a6200
+}
+
+.badge.locked {
+    background: #edf1f4;
+    color: #687887
+}
+
+.course-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 16px
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px
+}
+
+.detail-hero {
+    background: var(--navy);
+    color: white;
+    border-radius: 16px;
+    padding: 30px
+}
+
+.detail-hero h1 {
+    font-size: 2.15rem
+}
+
+.detail-hero p {
+    color: #dce6ee;
+    margin: 10px 0 20px
+}
+
+.skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px
+}
+
+.skill {
+    background: #eef2f5;
+    color: var(--navy);
+    padding: 5px 9px;
+    border-radius: 7px;
+    font-size: .8rem
+}
+
+.modules {
+    display: grid;
+    gap: 8px;
+    margin-top: 17px
+}
+
+.module {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px
+}
