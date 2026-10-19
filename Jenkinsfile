@@ -1,22 +1,29 @@
+
 pipeline {
     agent any
+
+    triggers {
+        pollSCM('H/2 * * * *')
+    }
 
     stages {
         stage('Install') {
             steps {
-                bat 'make install'
+                bat 'node --version'
+                bat 'npm --version'
+                bat 'npm ci --prefix frontend'
             }
         }
 
         stage('Test') {
             steps {
-                bat 'make test'
+                bat 'npm --prefix frontend test'
             }
         }
 
         stage('Build') {
             steps {
-                bat 'make build'
+                bat 'npm --prefix frontend run build'
             }
         }
     }
@@ -25,7 +32,6 @@ pipeline {
         success {
             echo 'StudySphere frontend CI completed successfully!'
         }
-
         failure {
             echo 'StudySphere frontend CI failed.'
         }
