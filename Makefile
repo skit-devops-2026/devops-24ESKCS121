@@ -1,13 +1,14 @@
+
 .PHONY: install test build run
 
 install:
-	cd frontend && npm install
+	npm --prefix frontend install
 
 test:
-	cd frontend && npm test
+	npm --prefix frontend test
 
 build:
-	cd frontend && npm run build
+	npm --prefix frontend run build
 
 run:
-	cd frontend && npm run dev -- --host 0.0.0.0
+	npm --prefix frontend run dev -- --host 0.0.0.0
