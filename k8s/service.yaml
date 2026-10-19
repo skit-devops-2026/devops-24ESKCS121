@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: studysphere
+  namespace: studysphere
+  labels:
+    app: studysphere
+spec:
+  type: ClusterIP
+  selector:
+    app: studysphere
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP

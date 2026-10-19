@@ -1,0 +1,62 @@
+{
+  "uid": "studysphere-monitoring",
+  "title": "StudySphere Monitoring",
+  "tags": ["studysphere", "nginx", "prometheus"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "15s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Nginx Availability",
+      "type": "stat",
+      "gridPos": {"h": 5, "w": 6, "x": 0, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "nginx_up", "legendFormat": "Nginx up", "refId": "A"}
+      ],
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}
+      }
+    },
+    {
+      "id": 2,
+      "title": "Active Connections",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "nginx_connections_active", "legendFormat": "Active", "refId": "A"}
+      ]
+    },
+    {
+      "id": 3,
+      "title": "HTTP Requests per Second",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "rate(nginx_http_requests_total[5m])", "legendFormat": "Requests/sec", "refId": "A"}
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Connection States",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "nginx_connections_reading", "legendFormat": "Reading", "refId": "A"},
+        {"expr": "nginx_connections_writing", "legendFormat": "Writing", "refId": "B"},
+        {"expr": "nginx_connections_waiting", "legendFormat": "Waiting", "refId": "C"}
+      ]
+    }
+  ]
+}

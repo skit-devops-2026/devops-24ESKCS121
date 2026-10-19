@@ -1,0 +1,67 @@
+services:
+  studysphere:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        COMMIT_SHA: ${COMMIT_SHA:-unknown}
+    image: studysphere:local
+    container_name: studysphere-app
+    ports:
+      - "127.0.0.1:8081:80"
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:1.4.2
+    container_name: studysphere-nginx-exporter
+    command:
+      - "--nginx.scrape-uri=http://studysphere/stub_status"
+    depends_on:
+      studysphere:
+        condition: service_healthy
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  prometheus:
+    image: prom/prometheus:v3.8.0
+    container_name: studysphere-prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=7d"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    depends_on:
+      - nginx-exporter
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  grafana:
+    image: grafana/grafana:12.2.0
+    container_name: studysphere-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD in .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  prometheus_data:
+  grafana_data:

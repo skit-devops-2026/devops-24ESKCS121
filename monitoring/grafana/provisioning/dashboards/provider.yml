@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: StudySphere
+    orgId: 1
+    folder: StudySphere
+    type: file
+    disableDeletion: true
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards

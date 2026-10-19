@@ -1,0 +1,26 @@
+server {
+    listen 80;
+    server_name _;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    server_tokens off;
+
+    location = /health {
+        access_log off;
+        default_type text/plain;
+        return 200 "${COMMIT_SHA}\n";
+    }
+
+    location = /stub_status {
+        stub_status;
+        access_log off;
+        allow 172.19.0.0/16;
+        deny all;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
