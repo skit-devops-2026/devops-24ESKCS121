@@ -4,19 +4,19 @@ pipeline {
     stages {
         stage('Install') {
             steps {
-                sh 'make install'
+                bat 'make install'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'make test'
+                bat 'make test'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'make build'
+                bat 'make build'
             }
         }
     }

@@ -1,91 +1,62 @@
-const test = require("node:test");
-const assert = require("node:assert");
 
-global.window = {};
+import { describe, expect, it } from "vitest";
+import { courses, paths, projects } from "../src/data/courses";
 
-require("../assets/js/data.js");
+describe("StudySphere course data", () => {
+    it("should contain 6 courses", () => {
+        expect(courses).toHaveLength(6);
+    });
 
+    it("should contain the expected course IDs", () => {
+        expect(courses.map((course) => course.id)).toEqual([
+            "html",
+            "css",
+            "js",
+            "react",
+            "node",
+            "mongodb",
+        ]);
+    });
 
-const data = global.window.STUDYSPHERE;
+    it("should contain 8 JavaScript lessons", () => {
+        const course = courses.find((course) => course.id === "js");
 
-test("STUDYSPHERE data object should exist", () => {
-    assert.ok(data);
-});
+        expect(course).toBeDefined();
+        expect(course.lessons).toHaveLength(8);
+    });
 
-test("should contain 6 courses", () => {
-    assert.strictEqual(data.courses.length, 6);
-});
+    it("should define the MERN path with all 6 courses", () => {
+        const path = paths.find((path) => path.id === "mern");
 
-test("should contain expected course IDs", () => {
-    const ids = data.courses.map(course => course.id);
+        expect(path).toBeDefined();
+        expect(path.courses).toEqual([
+            "html",
+            "css",
+            "js",
+            "react",
+            "node",
+            "mongodb",
+        ]);
+    });
 
-    assert.deepStrictEqual(ids, [
-        "html",
-        "css",
-        "js",
-        "react",
-        "node",
-        "mongodb"
-    ]);
-});
+    it("should define the DSA path with no courses", () => {
+        const path = paths.find((path) => path.id === "dsa");
 
-test("HTML course should be completed with 100% progress", () => {
-    const course = data.courses.find(course => course.id === "html");
+        expect(path).toBeDefined();
+        expect(path.courses).toEqual([]);
+    });
 
-    assert.strictEqual(course.status, "completed");
-    assert.strictEqual(course.progress, 100);
-});
+    it("should contain 7 projects", () => {
+        expect(projects).toHaveLength(7);
+    });
 
-test("JavaScript course should be in progress", () => {
-    const course = data.courses.find(course => course.id === "js");
+    it("should define the MERN Task Manager project correctly", () => {
+        const project = projects.find(
+            (project) => project[0] === "MERN Task Manager"
+        );
 
-    assert.strictEqual(course.status, "in-progress");
-    assert.strictEqual(course.progress, 38);
-});
-
-test("React course should be locked", () => {
-    const course = data.courses.find(course => course.id === "react");
-
-    assert.strictEqual(course.status, "locked");
-    assert.strictEqual(course.progress, 0);
-});
-
-test("JavaScript course should contain 8 lessons", () => {
-    const course = data.courses.find(course => course.id === "js");
-
-    assert.strictEqual(course.lessons.length, 8);
-});
-
-test("MERN path should contain all 6 courses", () => {
-    const path = data.paths.find(path => path.id === "mern");
-
-    assert.strictEqual(path.courses.length, 6);
-
-    assert.deepStrictEqual(path.courses, [
-        "html",
-        "css",
-        "js",
-        "react",
-        "node",
-        "mongodb"
-    ]);
-});
-
-test("DSA path should currently contain no courses", () => {
-    const path = data.paths.find(path => path.id === "dsa");
-
-    assert.deepStrictEqual(path.courses, []);
-});
-
-test("should contain 7 projects", () => {
-    assert.strictEqual(data.projects.length, 7);
-});
-
-test("MERN Task Manager project should require MERN path", () => {
-    const project = data.projects.find(
-        project => project[0] === "MERN Task Manager"
-    );
-
-    assert.strictEqual(project[1], "Advanced");
-    assert.strictEqual(project[5], "mern");
+        expect(project).toBeDefined();
+        expect(project[1]).toBe("Advanced");
+        expect(project[5]).toBe("mern");
+    });
 });

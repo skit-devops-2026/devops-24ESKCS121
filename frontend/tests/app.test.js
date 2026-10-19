@@ -1,192 +1,95 @@
-const test = require("node:test");
-const assert = require("node:assert");
 
-global.localStorage = {
-    data: {},
+import { beforeEach, describe, expect, it } from "vitest";
+import {
+    isAuthenticated,
+    readProgress,
+    readUser,
+    saveProgress,
+    STORAGE_KEYS,
+} from "../src/lib/storage";
 
-    getItem(key) {
-        return this.data[key] ?? null;
-    },
+function createMemoryStorage() {
+    const values = new Map();
 
-    setItem(key, value) {
-        this.data[key] = String(value);
-    },
+    return {
+        getItem: (key) => values.get(key) ?? null,
+        setItem: (key, value) => values.set(key, String(value)),
+        removeItem: (key) => values.delete(key),
+        clear: () => values.clear(),
+    };
+}
 
-    removeItem(key) {
-        delete this.data[key];
-    },
+beforeEach(() => {
+    globalThis.localStorage = createMemoryStorage();
+});
 
-    clear() {
-        this.data = {};
-    }
-};
+describe("StudySphere authentication and user storage", () => {
+    it("returns false when the user is not authenticated", () => {
+        expect(isAuthenticated()).toBe(false);
+    });
 
-global.window = {
-    STUDYSPHERE: {
-        courses: [
-            {
-                id: "html",
-                progress: 0,
-                status: "locked",
-                lessons: ["a", "b", "c", "d"]
-            }
-        ]
-    }
-};
+    it("returns true when the authentication key is true", () => {
+        localStorage.setItem(STORAGE_KEYS.auth, "true");
+        expect(isAuthenticated()).toBe(true);
+    });
 
-global.document = {
-    createElement() {
-        return {
-            className: "",
-            textContent: "",
-            appendChild() { },
-            classList: {
-                add() { },
-                remove() { }
-            }
+    it("reads stored user data", () => {
+        const user = {
+            name: "Student",
+            email: "student@example.com",
         };
-    },
 
-    body: {
-        dataset: {}
-    }
-};
+        localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user));
+        expect(readUser()).toEqual(user);
+    });
 
-global.requestAnimationFrame = () => { };
-global.setTimeout = () => { };
-global.addEventListener = () => { };
-global.scrollTo = () => { };
-global.scrollY = 0;
+    it("returns null when user data is missing or invalid", () => {
+        expect(readUser()).toBeNull();
 
-require("../assets/js/app.js");
-
-const StudySphere = window.StudySphere;
-
-
-// Authentication
-test("auth returns false when user is not logged in", () => {
-    localStorage.clear();
-
-    assert.strictEqual(StudySphere.auth(), false);
+        localStorage.setItem(STORAGE_KEYS.user, "{invalid json");
+        expect(readUser()).toBeNull();
+    });
 });
 
+describe("StudySphere progress storage", () => {
+    it("returns an empty object when progress is missing", () => {
+        expect(readProgress()).toEqual({});
+    });
 
-test("auth returns true when user is logged in", () => {
-    localStorage.setItem("studySphereAuth", "true");
+    it("reads stored progress", () => {
+        const progress = {
+            html: { progress: 50, status: "in-progress", completed: 3 },
+        };
 
-    assert.strictEqual(StudySphere.auth(), true);
-});
+        localStorage.setItem(STORAGE_KEYS.progress, JSON.stringify(progress));
+        expect(readProgress()).toEqual(progress);
+    });
 
+    it("saves course progress and calculates its percentage", () => {
+        const progress = saveProgress("html", 2, 4);
 
-// User data
-test("user returns stored user data", () => {
-    const user = {
-        name: "Dushyant",
-        email: "student@example.com"
-    };
-
-    localStorage.setItem(
-        "studySphereUser",
-        JSON.stringify(user)
-    );
-
-    assert.deepStrictEqual(StudySphere.user(), user);
-});
-
-
-// Progress
-test("progress returns empty object when no progress exists", () => {
-    localStorage.clear();
-
-    assert.deepStrictEqual(
-        StudySphere.progress(),
-        {}
-    );
-});
-
-
-test("progress returns stored progress", () => {
-    const progress = {
-        html: {
+        expect(progress.html).toEqual({
             progress: 50,
-            status: "in-progress"
-        }
-    };
+            status: "in-progress",
+            completed: 2,
+        });
 
-    localStorage.setItem(
-        "studySphereProgress",
-        JSON.stringify(progress)
-    );
+        expect(readProgress()).toEqual(progress);
+    });
 
-    assert.deepStrictEqual(
-        StudySphere.progress(),
-        progress
-    );
-});
+    it("marks a course completed at 100 percent", () => {
+        const progress = saveProgress("html", 4, 4);
 
+        expect(progress.html).toEqual({
+            progress: 100,
+            status: "completed",
+            completed: 4,
+        });
+    });
 
-// HTML escaping
-test("esc escapes dangerous HTML characters", () => {
-    const result = StudySphere.esc(
-        '<script>alert("xss")</script>'
-    );
-
-    assert.strictEqual(
-        result,
-        "&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;"
-    );
-});
-
-
-// Progress saving
-test("saveProgress calculates course progress correctly", () => {
-    localStorage.clear();
-
-    const course = {
-        id: "html",
-        lessons: ["a", "b", "c", "d"]
-    };
-
-    StudySphere.saveProgress(course, 1);
-
-    const saved = StudySphere.progress();
-
-    assert.strictEqual(
-        saved.html.progress,
-        50
-    );
-
-    assert.strictEqual(
-        saved.html.status,
-        "in-progress"
-    );
-
-    assert.strictEqual(
-        saved.html.completed,
-        2
-    );
-});
-
-
-test("saveProgress marks course completed at 100 percent", () => {
-    localStorage.clear();
-
-    const course = {
-        id: "html",
-        lessons: ["a", "b"]
-    };
-
-    StudySphere.saveProgress(course, 1);
-
-    const saved = StudySphere.progress();
-
-    assert.strictEqual(
-        saved.html.progress,
-        100
-    );
-
-    assert.strictEqual(
-        saved.html.status,
-        "completed"
-    );
+    it("preserves the existing localStorage keys", () => {
+        expect(STORAGE_KEYS.auth).toBe("studySphereAuth");
+        expect(STORAGE_KEYS.user).toBe("studySphereUser");
+        expect(STORAGE_KEYS.progress).toBe("studySphereProgress");
+    });
 });

@@ -1,0 +1,25 @@
+{
+  "name": "studysphere-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "vitest run",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.14",
+    "@vitejs/plugin-react": "^6.0.4",
+    "lucide-react": "^0.468.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.0.0",
+    "vite": "^8.0.0",
+    "tailwindcss": "^4.1.14"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  }
+}
