@@ -5,19 +5,19 @@
 
 ## Author
 
-| Roll No. | Name | GitHub username |
-|---|---|---|
+| Roll No.   | Name                    | GitHub username |
+| ---------- | ----------------------- | --------------- |
 | 24ESKCS121 | Dushyant Singh Sisodiya | Dushyantcoder07 |
 
 ## About
 
-StudySphere is a full-stack Learning Management System (LMS) built on the MERN stack (MongoDB, Express.js, React, Node.js). The platform provides a modern, scalable ecosystem designed to streamline online education for students, instructors, and administrators. 
+StudySphere is a full-stack Learning Management System (LMS) built on the MERN stack (MongoDB, Express.js, React, Node.js). The platform provides a modern, scalable ecosystem designed to streamline online education for students, instructors, and administrators.
 
 ## Tech stack
 
 - Frontend: React, Vite, Tailwind CSS, React Router
-- Backend: -
-- Database: -
+- Backend: Not implemented yet (authentication and progress are simulated with browser localStorage)
+- Database: Not implemented yet
 
 ## Running locally
 
@@ -33,7 +33,7 @@ does not yet have a backend.
 
 ## Live URL
 
-<Add once M5 is done. Until then, leave as is.>
+[StudySphere — Live Website](https://studysphere-3vxu.onrender.com)
 
 ## Health endpoint
 
