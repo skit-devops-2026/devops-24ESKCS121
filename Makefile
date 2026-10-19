@@ -1,21 +1,13 @@
 .PHONY: install test build run
 
 install:
-	@echo "No dependencies required for StudySphere frontend"
+	cd frontend && npm install
 
 test:
-	@echo "Checking frontend files..."
-	test -f frontend/index.html
-	test -f frontend/login.html
-	test -f frontend/register.html
-	test -f frontend/dashboard.html
-	test -f frontend/profile.html
-	@echo "Frontend tests passed"
+	cd frontend && npm test
 
 build:
-	@echo "Building StudySphere frontend..."
-	@echo "No build step required for HTML/CSS/JavaScript"
+	cd frontend && npm run build
 
 run:
-	@echo "Starting StudySphere frontend..."
-	cd frontend && python3 -m http.server 8000
+	cd frontend && npm run dev -- --host 0.0.0.0

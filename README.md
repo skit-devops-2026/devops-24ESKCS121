@@ -15,7 +15,7 @@ StudySphere is a full-stack Learning Management System (LMS) built on the MERN s
 
 ## Tech stack
 
-- Frontend: HTML,CSS,JS
+- Frontend: React, Vite, Tailwind CSS, React Router
 - Backend: -
 - Database: -
 
@@ -25,6 +25,11 @@ StudySphere is a full-stack Learning Management System (LMS) built on the MERN s
 make install
 make run
 ```
+
+The frontend is served from `frontend/`. Use `npm run build` for a production
+build and `npm test` for the focused unit tests. Authentication and progress
+are intentionally simulated with browser localStorage because this project
+does not yet have a backend.
 
 ## Live URL
 
