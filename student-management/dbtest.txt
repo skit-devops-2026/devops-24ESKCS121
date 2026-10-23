@@ -1,0 +1,66 @@
+# Student Management System — Authentication Test Report
+
+## 1. Student Registration and Login
+- **Test:** Register a new Student using valid details.
+- **Expected:** Student account is created, password is hashed, and a JWT token is returned.
+- **Result:** Passed.
+
+## 2. Duplicate Registration
+- **Test:** Register again using an existing email or username.
+- **Expected:** Request is rejected with an appropriate duplicate-account message.
+- **Result:** Passed.
+
+## 3. Teacher Registration
+- **Test:** Register a new Teacher with department and designation.
+- **Expected:** Teacher account is created with `approvalStatus: pending`; no login token is issued during registration.
+- **Result:** Passed.
+
+## 4. Pending Teacher Login
+- **Test:** Attempt to log in as a Teacher before Admin approval.
+- **Expected:** Login is blocked with an Admin-approval message.
+- **Result:** Passed.
+
+## 5. Incorrect Password
+- **Test:** Log in using a valid username and an incorrect password.
+- **Expected:** Request is rejected with `401 Unauthorized`.
+- **Result:** Passed.
+
+## 6. Password Hashing
+- **Test:** Inspect stored Student and Teacher password values in MongoDB.
+- **Expected:** Passwords are stored as bcrypt hashes, not plaintext.
+- **Result:** Passed. Both stored passwords had the bcrypt `$2b$` prefix and 60-character hash format.
+
+## 7. Admin Account Creation and Login
+- **Test:** Create an Admin through the trusted setup script and log in with the configured credentials.
+- **Expected:** Admin account is created with `approvalStatus: approved`; login returns a JWT and Admin role.
+- **Result:** Passed.
+
+## 8. Admin Approves Teacher
+- **Test:** Admin sends a `PATCH` request to `/api/auth/teachers/:id/approve`.
+- **Expected:** Teacher's `approvalStatus` changes from `pending` to `approved`.
+- **Result:** Passed.
+
+## 9. Approved Teacher Login
+- **Test:** Log in as a Teacher after Admin approval.
+- **Expected:** Login succeeds and the returned user has `approvalStatus: approved`.
+- **Result:** Passed.
+
+## 10. Student Cannot Approve Teacher
+- **Test:** Send the Teacher approval request using a Student JWT.
+- **Expected:** Request is rejected with `403 Forbidden`.
+- **Result:** Passed.
+
+## 11. Invalid JWT
+- **Test:** Send the Teacher approval request with an invalid token.
+- **Expected:** Request is rejected with `401 Unauthorized`.
+- **Result:** Passed.
+
+## 12. Public Admin Registration
+- **Test:** Attempt to register an Admin through `/api/auth/register`.
+- **Expected:** Request is rejected with `400 Bad Request` and the message `Only Student and Teacher registration is allowed.`
+- **Result:** Passed.
+
+## Overall Status
+All 12 authentication test cases listed above passed during manual testing with Postman and MongoDB verification.
+
+**Scope note:** These are manually performed tests. Automated test-suite results and CI status must be verified separately before merging the feature branch.
