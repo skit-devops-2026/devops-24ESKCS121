@@ -30,3 +30,7 @@ npm-debug.log*
 
 # but keep the example file
 !.env.example
+
+# Student Management - environment secrets
+student-management/server/.env
+student-management/server/node_modules/

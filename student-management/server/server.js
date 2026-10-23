@@ -1,13 +1,13 @@
+
 const express = require('express')
 const cors = require('cors')
+const mongoose = require('mongoose')
+require('dotenv').config()
 
 const app = express()
 const PORT = 5000
 
-// react frontend se request aane deta hai
 app.use(cors())
-
-// Allow the server to read JSON request bodies
 app.use(express.json())
 
 app.get('/api/health', (req, res) => {
@@ -16,6 +16,15 @@ app.get('/api/health', (req, res) => {
     })
 })
 
-app.listen(PORT, () => {
-    console.log(`Server is running at http://localhost:${PORT}`)
-})
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => {
+        console.log('Connected to MongoDB successfully!')
+
+        app.listen(PORT, () => {
+            console.log(`Server is running at http://localhost:${PORT}`)
+        })
+    })
+    .catch((error) => {
+        console.error('MongoDB connection failed:', error.message)
+        process.exit(1)
+    })
