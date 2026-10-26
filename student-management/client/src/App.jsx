@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import RoleSelection from "./components/RoleSelection";
 
 function App() {
   const [role, setRole] = useState("");
@@ -12,6 +13,7 @@ function App() {
         if (!response.ok) {
           throw new Error("Backend request failed");
         }
+
         return response.json();
       })
       .then((data) => {
@@ -29,11 +31,7 @@ function App() {
       <h1>Student Management System</h1>
       <p>Welcome to our college portal.</p>
 
-      <h2>Choose your role</h2>
-
-      <button onClick={() => setRole("Student")}>Student</button>
-      <button onClick={() => setRole("Teacher")}>Teacher</button>
-      <button onClick={() => setRole("Admin")}>Admin</button>
+      <RoleSelection onSelectRole={setRole} />
 
       {role && <h2>Welcome, {role}!</h2>}
 
@@ -41,7 +39,8 @@ function App() {
 
       <h2>Backend Connection</h2>
       <p role="status">{apiMessage}</p>
-      {apiStatus === "success" && <p>✅ API connected successfully!</p>}
+
+      {apiStatus === "success" && <p>API connected successfully!</p>}
     </div>
   );
 }
