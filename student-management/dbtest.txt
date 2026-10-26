@@ -1,4 +1,4 @@
-# Student Management System — Authentication and CRUD Test Report
+# Student Management System — Authentication, Student CRUD, and Teacher Management Test Report
 
 ## 1. Authentication Tests
 
@@ -38,9 +38,9 @@
 - **Result:** Passed.
 
 ### Test 8: Admin Approves Teacher
-- **Test:** Admin sends a `PATCH` request to `/api/auth/teachers/:id/approve`.
+- **Test:** Admin sends a `PATCH` request to the Teacher approval endpoint.
 - **Expected:** Teacher's `approvalStatus` changes from `pending` to `approved`.
-- **Result:** Passed.
+- **Result:** Passed. The route is now `PATCH /api/admin/teachers/:id/approve`.
 
 ### Test 9: Approved Teacher Login
 - **Test:** Log in as a Teacher after Admin approval.
@@ -62,56 +62,98 @@
 - **Expected:** Request is rejected with `400 Bad Request` and the message `Only Student and Teacher registration is allowed.`
 - **Result:** Passed.
 
+### Test 13: Rejected Teacher Login
+- **Test:** Attempt to log in as a Teacher whose application has been rejected.
+- **Expected:** Login is blocked with a rejection message.
+- **Result:** Passed.
+
 ## 2. Student CRUD API Tests
 
-### Test 13: Retrieve All Students
+### Test 14: Retrieve All Students
 - **Endpoint:** `GET /api/students`
 - **Test:** Retrieve the student list using an Admin JWT.
 - **Expected:** Return `200 OK` with the student count and student records.
 - **Result:** Passed.
 
-### Test 14: Retrieve Student by ID
+### Test 15: Retrieve Student by ID
 - **Endpoint:** `GET /api/students/:id`
 - **Test:** Retrieve an existing student using a valid MongoDB ObjectId.
 - **Expected:** Return `200 OK` with the student's public details.
 - **Result:** Passed.
 
-### Test 15: Invalid Student ID
+### Test 16: Invalid Student ID
 - **Endpoint:** `GET /api/students/:id`
 - **Test:** Send a request using an invalid ID such as `invalid-id`.
 - **Expected:** Return `400 Bad Request` with `Invalid student ID.`
 - **Result:** Passed.
 
-### Test 16: Create Student
+### Test 17: Create Student
 - **Endpoint:** `POST /api/students`
 - **Test:** Create a student using valid details and an authorized Admin token.
 - **Expected:** Return `201 Created` with the new student's public details. The password must not appear in the response.
 - **Result:** Passed.
 
-### Test 17: Update Student
+### Test 18: Update Student
 - **Endpoint:** `PUT /api/students/:id`
 - **Test:** Update a student's academic year to `3rd Year`.
 - **Expected:** Return `200 OK` with `Student updated successfully.` and the updated academic year.
 - **Result:** Passed.
 
-### Test 18: Duplicate Email or Username During Update
+### Test 19: Duplicate Email or Username During Update
 - **Endpoint:** `PUT /api/students/:id`
 - **Test:** Submit an update that conflicts with an existing email or username.
 - **Expected:** Return `409 Conflict` with `Email or username is already registered.`
 - **Result:** Conflict response observed during manual testing. Confirm the request used an existing email or username before treating this test as fully verified.
 
-### Test 19: Delete Student
+### Test 20: Delete Student
 - **Endpoint:** `DELETE /api/students/:id`
 - **Test:** Delete a test student using an Admin JWT.
 - **Expected:** Return `200 OK` with `Student deleted successfully.`
 - **Result:** Passed. The test student was deleted successfully.
 
-## 3. Overall Status
+## 3. Teacher Management API Tests
 
-- Authentication: 12 manually tested cases passed.
-- Student CRUD: Successful list, retrieve, create, update, and Admin deletion requests were manually tested.
-- Invalid student ID handling: Passed.
-- Duplicate-field update handling: The conflict response was observed; the exact request should be confirmed.
-- Automated tests and CI: Must be verified separately before merging.
+### Test 21: List Teachers
+- **Endpoint:** `GET /api/admin/teachers`
+- **Test:** Retrieve teacher records using an Admin JWT.
+- **Expected:** Return `200 OK` with the teacher count and public teacher details, excluding passwords.
+- **Result:** Passed. Two teacher records were returned with their approval statuses.
 
-**Scope note:** This report documents manual testing performed using Postman and MongoDB. It does not claim that automated tests or CI have passed. Authorization edge cases and any tests not explicitly performed must be verified separately before merging.
+### Test 22: Approve Teacher
+- **Endpoint:** `PATCH /api/admin/teachers/:id/approve`
+- **Test:** Approve a pending Teacher using an Admin JWT.
+- **Expected:** Teacher's approval status changes to `approved`.
+- **Result:** Passed in previous manual testing.
+
+### Test 23: Reject Teacher
+- **Endpoint:** `PATCH /api/admin/teachers/:id/reject`
+- **Test:** Reject a pending Teacher using an Admin JWT.
+- **Expected:** Teacher's approval status changes to `rejected`.
+- **Result:** Passed. The test Teacher's status changed to `rejected`.
+
+### Test 24: Update Teacher
+- **Endpoint:** `PUT /api/admin/teachers/:id`
+- **Test:** Update the designation of an existing Teacher to `Senior Assistant Professor`.
+- **Expected:** Return `200 OK` with `Teacher updated successfully.` and the updated designation.
+- **Result:** Passed. The response contained the updated designation and public teacher details.
+
+### Test 25: Delete Teacher
+- **Endpoint:** `DELETE /api/admin/teachers/:id`
+- **Test:** Delete the rejected test Teacher using an Admin JWT.
+- **Expected:** Return `200 OK` with `Teacher deleted successfully.` and the deleted Teacher ID.
+- **Result:** Passed. The rejected test Teacher was deleted successfully.
+
+### Test 26: Teacher Update Validation and Authorization
+- **Test:** Verify invalid IDs, missing or invalid authentication, non-Admin access, and invalid update fields.
+- **Expected:** Invalid requests are rejected with appropriate `4xx` responses.
+- **Result:** Not yet fully verified as a separate test set.
+
+## 4. Overall Status
+
+- **Authentication:** 13 documented test cases; the rejected-Teacher login case is included based on manual testing.
+- **Student CRUD:** List, retrieve, create, update, and Admin deletion requests passed; duplicate-field update needs confirmation.
+- **Teacher Management:** List, approve, reject, update, and delete endpoints were manually tested successfully.
+- **Syntax checks:** Run separately before committing.
+- **Automated tests and CI:** Must be verified separately before merging.
+
+**Scope note:** This report documents manual testing performed using Postman and MongoDB. It does not claim that automated tests or CI have passed. Authorization edge cases, invalid inputs, and any tests not explicitly performed must be verified separately before merging.
