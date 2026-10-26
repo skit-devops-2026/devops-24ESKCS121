@@ -74,7 +74,7 @@ const userSchema = new mongoose.Schema(
 
         approvalStatus: {
             type: String,
-            enum: ['pending', 'approved'],
+            enum: ['pending', 'approved', 'rejected'],
             default: function () {
                 return this.role === 'Teacher' ? 'pending' : 'approved'
             }

@@ -4,11 +4,6 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
 
-const {
-    authenticateToken,
-    requireAdmin
-} = require('../middleware/authMiddleware')
-
 const router = express.Router()
 
 // Create a safe user response without the password.
@@ -200,9 +195,15 @@ router.post('/login', async (req, res) => {
             })
         }
 
-        if (user.role === 'Teacher' && user.approvalStatus !== 'approved') {
+        if (user.role === 'Teacher' && user.approvalStatus === 'pending') {
             return res.status(403).json({
                 message: 'Your account is awaiting Admin approval.'
+            })
+        }
+
+        if (user.role === 'Teacher' && user.approvalStatus === 'rejected') {
+            return res.status(403).json({
+                message: 'Your Teacher application has been rejected. Please contact the Admin.'
             })
         }
 
@@ -231,59 +232,6 @@ router.post('/login', async (req, res) => {
 
         return res.status(500).json({
             message: 'Unable to log in right now.'
-        })
-    }
-})
-
-
-// Admin approves a pending Teacher account.
-router.patch('/teachers/:id/approve', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        // Verify the account still exists and is an Admin in MongoDB.
-        const admin = await User.findById(req.user.userId)
-
-        if (!admin || admin.role !== 'Admin' || admin.approvalStatus !== 'approved') {
-            return res.status(403).json({
-                message: 'Admin access is required.'
-            })
-        }
-
-        const teacher = await User.findOne({
-            _id: req.params.id,
-            role: 'Teacher'
-        })
-
-        if (!teacher) {
-            return res.status(404).json({
-                message: 'Teacher account not found.'
-            })
-        }
-
-        if (teacher.approvalStatus === 'approved') {
-            return res.status(200).json({
-                message: 'Teacher is already approved.',
-                user: publicUser(teacher)
-            })
-        }
-
-        teacher.approvalStatus = 'approved'
-        await teacher.save()
-
-        return res.status(200).json({
-            message: 'Teacher approved successfully.',
-            user: publicUser(teacher)
-        })
-    } catch (error) {
-        if (error.name === 'CastError') {
-            return res.status(400).json({
-                message: 'Invalid teacher ID.'
-            })
-        }
-
-        console.error('Teacher approval error:', error.message)
-
-        return res.status(500).json({
-            message: 'Unable to approve Teacher right now.'
         })
     }
 })
