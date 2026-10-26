@@ -1,66 +1,117 @@
-# Student Management System — Authentication Test Report
+# Student Management System — Authentication and CRUD Test Report
 
-## 1. Student Registration and Login
+## 1. Authentication Tests
+
+### Test 1: Student Registration and Login
 - **Test:** Register a new Student using valid details.
 - **Expected:** Student account is created, password is hashed, and a JWT token is returned.
 - **Result:** Passed.
 
-## 2. Duplicate Registration
+### Test 2: Duplicate Registration
 - **Test:** Register again using an existing email or username.
 - **Expected:** Request is rejected with an appropriate duplicate-account message.
 - **Result:** Passed.
 
-## 3. Teacher Registration
+### Test 3: Teacher Registration
 - **Test:** Register a new Teacher with department and designation.
 - **Expected:** Teacher account is created with `approvalStatus: pending`; no login token is issued during registration.
 - **Result:** Passed.
 
-## 4. Pending Teacher Login
+### Test 4: Pending Teacher Login
 - **Test:** Attempt to log in as a Teacher before Admin approval.
 - **Expected:** Login is blocked with an Admin-approval message.
 - **Result:** Passed.
 
-## 5. Incorrect Password
+### Test 5: Incorrect Password
 - **Test:** Log in using a valid username and an incorrect password.
 - **Expected:** Request is rejected with `401 Unauthorized`.
 - **Result:** Passed.
 
-## 6. Password Hashing
+### Test 6: Password Hashing
 - **Test:** Inspect stored Student and Teacher password values in MongoDB.
 - **Expected:** Passwords are stored as bcrypt hashes, not plaintext.
-- **Result:** Passed. Both stored passwords had the bcrypt `$2b$` prefix and 60-character hash format.
+- **Result:** Passed. Stored passwords had the bcrypt `$2b$` prefix and 60-character hash format.
 
-## 7. Admin Account Creation and Login
+### Test 7: Admin Account Creation and Login
 - **Test:** Create an Admin through the trusted setup script and log in with the configured credentials.
 - **Expected:** Admin account is created with `approvalStatus: approved`; login returns a JWT and Admin role.
 - **Result:** Passed.
 
-## 8. Admin Approves Teacher
+### Test 8: Admin Approves Teacher
 - **Test:** Admin sends a `PATCH` request to `/api/auth/teachers/:id/approve`.
 - **Expected:** Teacher's `approvalStatus` changes from `pending` to `approved`.
 - **Result:** Passed.
 
-## 9. Approved Teacher Login
+### Test 9: Approved Teacher Login
 - **Test:** Log in as a Teacher after Admin approval.
 - **Expected:** Login succeeds and the returned user has `approvalStatus: approved`.
 - **Result:** Passed.
 
-## 10. Student Cannot Approve Teacher
+### Test 10: Student Cannot Approve Teacher
 - **Test:** Send the Teacher approval request using a Student JWT.
 - **Expected:** Request is rejected with `403 Forbidden`.
 - **Result:** Passed.
 
-## 11. Invalid JWT
+### Test 11: Invalid JWT
 - **Test:** Send the Teacher approval request with an invalid token.
 - **Expected:** Request is rejected with `401 Unauthorized`.
 - **Result:** Passed.
 
-## 12. Public Admin Registration
+### Test 12: Public Admin Registration
 - **Test:** Attempt to register an Admin through `/api/auth/register`.
 - **Expected:** Request is rejected with `400 Bad Request` and the message `Only Student and Teacher registration is allowed.`
 - **Result:** Passed.
 
-## Overall Status
-All 12 authentication test cases listed above passed during manual testing with Postman and MongoDB verification.
+## 2. Student CRUD API Tests
 
-**Scope note:** These are manually performed tests. Automated test-suite results and CI status must be verified separately before merging the feature branch.
+### Test 13: Retrieve All Students
+- **Endpoint:** `GET /api/students`
+- **Test:** Retrieve the student list using an Admin JWT.
+- **Expected:** Return `200 OK` with the student count and student records.
+- **Result:** Passed.
+
+### Test 14: Retrieve Student by ID
+- **Endpoint:** `GET /api/students/:id`
+- **Test:** Retrieve an existing student using a valid MongoDB ObjectId.
+- **Expected:** Return `200 OK` with the student's public details.
+- **Result:** Passed.
+
+### Test 15: Invalid Student ID
+- **Endpoint:** `GET /api/students/:id`
+- **Test:** Send a request using an invalid ID such as `invalid-id`.
+- **Expected:** Return `400 Bad Request` with `Invalid student ID.`
+- **Result:** Passed.
+
+### Test 16: Create Student
+- **Endpoint:** `POST /api/students`
+- **Test:** Create a student using valid details and an authorized Admin token.
+- **Expected:** Return `201 Created` with the new student's public details. The password must not appear in the response.
+- **Result:** Passed.
+
+### Test 17: Update Student
+- **Endpoint:** `PUT /api/students/:id`
+- **Test:** Update a student's academic year to `3rd Year`.
+- **Expected:** Return `200 OK` with `Student updated successfully.` and the updated academic year.
+- **Result:** Passed.
+
+### Test 18: Duplicate Email or Username During Update
+- **Endpoint:** `PUT /api/students/:id`
+- **Test:** Submit an update that conflicts with an existing email or username.
+- **Expected:** Return `409 Conflict` with `Email or username is already registered.`
+- **Result:** Conflict response observed during manual testing. Confirm the request used an existing email or username before treating this test as fully verified.
+
+### Test 19: Delete Student
+- **Endpoint:** `DELETE /api/students/:id`
+- **Test:** Delete a test student using an Admin JWT.
+- **Expected:** Return `200 OK` with `Student deleted successfully.`
+- **Result:** Passed. The test student was deleted successfully.
+
+## 3. Overall Status
+
+- Authentication: 12 manually tested cases passed.
+- Student CRUD: Successful list, retrieve, create, update, and Admin deletion requests were manually tested.
+- Invalid student ID handling: Passed.
+- Duplicate-field update handling: The conflict response was observed; the exact request should be confirmed.
+- Automated tests and CI: Must be verified separately before merging.
+
+**Scope note:** This report documents manual testing performed using Postman and MongoDB. It does not claim that automated tests or CI have passed. Authorization edge cases and any tests not explicitly performed must be verified separately before merging.
