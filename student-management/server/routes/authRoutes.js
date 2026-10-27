@@ -7,6 +7,7 @@ const User = require('../models/User')
 const router = express.Router()
 
 // Create a safe user response without the password.
+
 function publicUser(user) {
     return {
         id: user._id,
@@ -14,9 +15,11 @@ function publicUser(user) {
         email: user.email,
         username: user.username,
         role: user.role,
-        approvalStatus: user.approvalStatus
+        approvalStatus: user.approvalStatus,
+        academicYear: user.academicYear
     }
 }
+
 
 // Register a Student or Teacher.
 router.post('/register', async (req, res) => {
