@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
 import { BookOpen, GraduationCap, LogOut } from "lucide-react";
 import "./App.css";
+
 import RoleSelection from "./components/RoleSelection";
 import AuthForm from "./components/AuthForm";
+import StudentDashboard from "./pages/student/StudentDashboard";
+import TeacherDashboard from "./pages/teacher/TeacherDashboard";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 function App() {
   const [apiStatus, setApiStatus] = useState("loading");
   const [authPage, setAuthPage] = useState(null);
+
   const [session, setSession] = useState(() => {
     try {
       const token = localStorage.getItem("studySphereToken");
@@ -24,6 +29,7 @@ function App() {
         if (!response.ok) {
           throw new Error("Backend request failed");
         }
+
         return response.json();
       })
       .then(() => setApiStatus("success"))
@@ -41,19 +47,57 @@ function App() {
   function handleAuthSuccess(data) {
     localStorage.setItem("studySphereToken", data.token);
     localStorage.setItem("studySphereUser", JSON.stringify(data.user));
-    setSession({ token: data.token, user: data.user });
+
+    setSession({
+      token: data.token,
+      user: data.user,
+    });
+
     setAuthPage(null);
   }
 
   function handleLogout() {
     localStorage.removeItem("studySphereToken");
     localStorage.removeItem("studySphereUser");
+
     setSession(null);
     setAuthPage(null);
   }
 
   function goHome() {
     setAuthPage(null);
+  }
+
+  function renderDashboard() {
+    if (!session?.user) {
+      return null;
+    }
+
+    switch (session.user.role) {
+      case "Student":
+        return <StudentDashboard user={session.user} />;
+
+      case "Teacher":
+        return <TeacherDashboard user={session.user} />;
+
+      case "Admin":
+        return <AdminDashboard user={session.user} token={session.token} />;
+
+      default:
+        return (
+          <section className="signed-in-panel">
+            <div className="auth-brand-icon">
+              <GraduationCap size={28} />
+            </div>
+
+            <p className="eyebrow">STUDYSPHERE ACCOUNT</p>
+            <h1>Welcome, {session.user.name}!</h1>
+            <p className="intro-description">
+              Your account role is not recognized.
+            </p>
+          </section>
+        );
+    }
   }
 
   return (
@@ -69,6 +113,7 @@ function App() {
             <span className="brand-icon">
               <GraduationCap size={25} />
             </span>
+
             <span>StudySphere</span>
           </button>
 
@@ -95,23 +140,7 @@ function App() {
 
       <main className="landing-main">
         {session ? (
-          <section className="signed-in-panel">
-            <div className="auth-brand-icon">
-              <GraduationCap size={28} />
-            </div>
-            <p className="eyebrow">STUDYSPHERE ACCOUNT</p>
-            <h1>Welcome, {session.user.name}!</h1>
-            <p className="intro-description">
-              You are signed in as {session.user.role}.
-            </p>
-
-            {session.user.role === "Teacher" &&
-              session.user.approvalStatus === "pending" && (
-                <p className="auth-alert success">
-                  Your account is awaiting Admin approval.
-                </p>
-              )}
-          </section>
+          renderDashboard()
         ) : authPage?.mode === "register" && !authPage.role ? (
           <section className="registration-page">
             <button className="auth-back-button" type="button" onClick={goHome}>
@@ -124,7 +153,9 @@ function App() {
               </div>
 
               <p className="eyebrow">JOIN STUDYSPHERE</p>
+
               <h1>Create your account</h1>
+
               <p className="section-description">
                 Select the type of account you want to create.
               </p>
@@ -135,6 +166,7 @@ function App() {
                   onClick={() => openRegistration("Student")}
                 >
                   <GraduationCap size={24} />
+
                   <span>
                     <strong>Register as Student</strong>
                     <small>
@@ -149,6 +181,7 @@ function App() {
                   onClick={() => openRegistration("Teacher")}
                 >
                   <BookOpen size={24} />
+
                   <span>
                     <strong>Register as Teacher</strong>
                     <small>
@@ -176,7 +209,9 @@ function App() {
           <>
             <section className="intro">
               <p className="eyebrow">STUDENT MANAGEMENT SYSTEM</p>
+
               <h1>Your college life, organised in one place.</h1>
+
               <p className="intro-description">
                 StudySphere makes it easier to access academic records, manage
                 student information, and support everyday college activities
@@ -186,6 +221,7 @@ function App() {
 
             <section className="access-section">
               <h2>How would you like to continue?</h2>
+
               <p className="section-description">
                 Choose your role to access StudySphere.
               </p>
@@ -197,6 +233,7 @@ function App() {
 
         <p className="backend-status" role="status">
           <span className={`status-dot ${apiStatus}`} />
+
           {apiStatus === "success"
             ? "System connected"
             : apiStatus === "error"
